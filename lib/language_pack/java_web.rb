@@ -55,8 +55,6 @@ EOF
 replace = <<-EOF
 MEM=$(echo $VCAP_APPLICATION | grep -o '"mem"\\:[0-9]\\{3,5\\}' | grep -o '[0-9]\\{3,5\\}')
 M_POST='M'
-CMD='\\"$_RUNJAVA\\" \\"$LOGGING_CONFIG\\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS -Xmx$MEM$M_POST -Xms$MEM$M_POST -Dhttp.port=$PORT \\' 
-echo $CMD
 eval exec \\"$_RUNJAVA\\" \\"$LOGGING_CONFIG\\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS -Xmx$MEM$M_POST -Xms$MEM$M_POST -Dhttp.port=$PORT \\  
 EOF
 
