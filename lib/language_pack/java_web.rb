@@ -49,13 +49,13 @@ module LanguagePack
       catalina_sh = File.read(catalina_sh_path)
 
       find = <<-EOF
-      eval exec \"$_RUNJAVA\" \"$LOGGING_CONFIG\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS \
+      eval exec \\"$_RUNJAVA\\" \\"$LOGGING_CONFIG\\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS \\
       EOF
 
       replace = <<-EOF
-      MEM=$(echo $VCAP_APPLICATION | grep -o '"mem"\:[0-9]\{3,5\}' | grep -o '[0-9]\{3,5\}')
+      MEM=$(echo $VCAP_APPLICATION | grep -o '"mem"\\:[0-9]\\{3,5\\}' | grep -o '[0-9]\\{3,5\\}')
       M_POST='m'
-      eval exec \"$_RUNJAVA\" \"$LOGGING_CONFIG\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS -Dhttp.port=$PORT -Xmx$MEM$M_POST -Xms$MEM$M_POST \  
+      eval exec \\"$_RUNJAVA\\" \\"$LOGGING_CONFIG\\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS -Dhttp.port=$PORT -Xmx$MEM$M_POST -Xms$MEM$M_POST \\  
       EOF
 
       File.open(catalina_sh_path, "w") { |file| file.puts catalina_sh.gsub(find, replace) }
