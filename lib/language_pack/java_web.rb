@@ -43,6 +43,23 @@ module LanguagePack
       run_with_err_output("tar xzf #{tomcat_tarball} -C #{tomcat_dir} && mv #{tomcat_dir}/apache-tomcat*/* #{tomcat_dir} && " +
               "rm -rf #{tomcat_dir}/apache-tomcat*")
       FileUtils.rm_rf tomcat_tarball
+
+      # patch catalina.sh
+      catalina_sh_path = "#{tomcat_dir}/bin/catalina.sh"
+      catalina_sh = File.read(catalina_sh_path)
+
+      find = <<-EOF
+      eval exec \"$_RUNJAVA\" \"$LOGGING_CONFIG\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS \
+      EOF
+
+      replace = <<-EOF
+      MEM=$(echo $VCAP_APPLICATION | grep -o '"mem"\:[0-9]\{3,5\}' | grep -o '[0-9]\{3,5\}')
+      M_POST='m'
+      eval exec \"$_RUNJAVA\" \"$LOGGING_CONFIG\" $LOGGING_MANAGER $JAVA_OPTS $CATALINA_OPTS -Xmx$MEM$M_POST -Xms$MEM$M_POST \  
+      EOF
+
+      File.open(catalina_sh_path, "w") { |file| file.puts catalina_sh.gsub(find, replace) }
+
       unless File.exists?("#{tomcat_dir}/bin/catalina.sh")
         puts "Unable to retrieve Tomcat"
         exit 1
